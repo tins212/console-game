@@ -1,11 +1,9 @@
 #pragma once
 #include "Player.h"
+#include "Map.h"
 #include <vector>
 
 using namespace std;
-
-void generate_map(vector<vector<char>>& map);
-char generate_char();
 
 class Game {
 public:
@@ -14,5 +12,5 @@ public:
 	void move(char op);
 private:
 	Player player;
-	vector<vector<char>> map;
+	Map map;
 };

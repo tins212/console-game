@@ -1,93 +1,67 @@
 #include "Game.h"
+#include "Map.h"
+
 #include <iostream>
-#include <ctime>
+#include <vector>
 
 using namespace std;
 
-char generate_char()
-{
-	int char_idx = 1 + rand() % 100;
-
-	if (char_idx < 94) {
-		return '_';
-	}
-	else if (char_idx < 96) {
-		return 'E';
-	}
-	else {
-		return 'T';
-	}
-}
-
-void generate_map(vector<vector<char>>& map)
-{
-	for (int i = 0; i < 14; i++)
-	{
-		vector <char> row;
-		for (int j = 0; j < 25; j++)
-		{
-			if (i == 12 and j == 1) {
-				row.push_back('P');
-			}
-			else {
-				row.push_back(generate_char());
-			}
-		}
-		map.push_back(row);
-	}
-}
-
 Game::Game()
 {
-	srand(time(nullptr));
-	generate_map(map);
 }
 
 void Game::display()
 {
-	for (int i = 0; i < 14; i++)
-	{
-		for (int j = 0; j < 25; j++)
-		{
-			cout << map[i][j];
-		}
-		cout << endl;
-	}
+	map.draw();
 }
 
 void Game::move(char op)
 {
+	// returns the reference of a map
+	vector<vector<char>>& temp_map = map.get_map();
+
 	switch (op) {
 	case 'W':
 		// updates map
-		map[player.get_y()][player.get_x()] = '_';
-		map[player.get_y()-1][player.get_x()] = 'P';
-	
+		temp_map[player.get_y()][player.get_x()] = '_';
+		temp_map[player.get_y() - 1][player.get_x()] = 'P';
+
 		// updates player
 		player.set_x(player.get_x());
 		player.set_y(player.get_y() - 1);
 		break;
 	case 'A':
-		map[player.get_y()][player.get_x()] = '_';
-		map[player.get_y()][player.get_x()-1] = 'P';
+		temp_map[player.get_y()][player.get_x()] = '_';
+		temp_map[player.get_y()][player.get_x() - 1] = 'P';
 
-		player.set_x(player.get_x()-1);
+		player.set_x(player.get_x() - 1);
 		player.set_y(player.get_y());
 		break;
 	case 'D':
-		map[player.get_y()][player.get_x()] = '_';
-		map[player.get_y()][player.get_x()+1] = 'P';
+		temp_map[player.get_y()][player.get_x()] = '_';
+		temp_map[player.get_y()][player.get_x() + 1] = 'P';
 
-		player.set_x(player.get_x()+1);
+		player.set_x(player.get_x() + 1);
 		player.set_y(player.get_y());
 		break;
 	case 'S':
-		map[player.get_y()][player.get_x()] = '_';
-		map[player.get_y()+1][player.get_x()] = 'P';
+		temp_map[player.get_y()][player.get_x()] = '_';
+		temp_map[player.get_y() + 1][player.get_x()] = 'P';
 
 		player.set_x(player.get_x());
-		player.set_y(player.get_y()+1);
+		player.set_y(player.get_y() + 1);
 		break;
+	case 'T':
+		map.change_current();
+
+		// deletes the player from the previous map
+		temp_map[player.get_y()][player.get_x()] = '_';
+		// updates player coordinates for the second map
+		player.set_x(1);
+		player.set_y(12);
+
+		vector<vector<char>>& new_map = map.get_map();
+		new_map[player.get_y()][player.get_x()] = 'P';
 	}
 }
 

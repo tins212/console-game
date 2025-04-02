@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Game.h"
+#include "Map.h"
 #include <ctime>
 #include <conio.h>
 #include <windows.h>
@@ -22,10 +23,11 @@ int main() {
 
 	while (true) {
 		game.display();
+	
 		cout << "";
 		char op = _getch();
-
 		game.move(op);
+
 		system("cls");
 	}
 	
