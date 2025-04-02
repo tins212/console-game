@@ -1,0 +1,5 @@
+﻿  Game.cpp
+C:\Users\tinst\source\repos\game_project\GameDev\Game.cpp(42,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  source.cpp
+  Generating Code...
+  GameDev.vcxproj -> C:\Users\tinst\source\repos\game_project\x64\Debug\GameDev.exe
