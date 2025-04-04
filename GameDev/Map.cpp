@@ -2,6 +2,7 @@
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
+#include <ctime>
 
 char generate_char_test()
 {
@@ -20,6 +21,8 @@ char generate_char_test()
 
 void set_forest(vector<vector<char>>& forest)
 {
+	srand(time(nullptr));
+
 	for (int i = 0; i < 14; i++)
 	{
 		vector <char> row;
@@ -38,16 +41,24 @@ void set_forest(vector<vector<char>>& forest)
 
 void set_beach(vector<vector<char>>& beach)
 {
+	srand(time(nullptr));
+
 	for (int i = 0; i < 14; i++)
 	{
 		vector<char> row;
+
+		// int sand = offset + rand() % (12 - 5 + 1);
+		int sand = 12 + rand() % 6;
 		for (int j = 0; j < 25; j++)
 		{
 			if (i == 12 and j == 1) {
 				row.push_back('P');
 			}
+			else if (j < sand) {
+				row.push_back('o');
+			}
 			else {
-				row.push_back('-');
+				row.push_back('~');
 			}
 		}
 		beach.push_back(row);
@@ -57,6 +68,7 @@ void set_beach(vector<vector<char>>& beach)
 Map::Map()
 {
 	current = 1;
+	current_terrain = '_';
 	set_forest(forest);
 	set_beach(beach);
 }
@@ -115,3 +127,15 @@ void Map::change_current()
 		}
 	}
 }
+
+char Map::get_current_terrain()
+{
+	return current_terrain;
+}
+
+void Map::set_current_terrain(char terrain)
+{
+	current_terrain = terrain;
+}
+
+

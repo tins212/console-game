@@ -1,5 +1,9 @@
-﻿  Map.cpp
+﻿  Game.cpp
+  Map.cpp
+C:\Users\tinst\source\repos\game_project\GameDev\Map.cpp(24,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\tinst\source\repos\game_project\GameDev\Map.cpp(44,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Player.cpp
   source.cpp
   Generating Code...
-C:\Users\tinst\source\repos\game_project\GameDev\Map.cpp(92,1): warning C4715: 'Map::get_map': not all control paths return a value
+C:\Users\tinst\source\repos\game_project\GameDev\Map.cpp(104,1): warning C4715: 'Map::get_map': not all control paths return a value
   GameDev.vcxproj -> C:\Users\tinst\source\repos\game_project\x64\Debug\GameDev.exe

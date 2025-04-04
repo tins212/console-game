@@ -21,7 +21,9 @@ int main() {
 	Game game;
 	hideCursor();
 
+	
 	while (true) {
+		game.display_stats();
 		game.display();
 	
 		cout << "";
