@@ -10,6 +10,7 @@ using namespace std;
 
 Game::Game()
 {
+	game_over = false;
 }
 
 void Game::display()
@@ -26,14 +27,15 @@ void Game::move(char op)
 	case 'W':
 		// checks if there is a fight or an obsticale 
 		if (can_move(temp_map[player.get_y() - 1][player.get_x()])) {
+			// deletes the player from the old location
+			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
+			
 			// checks current terrain changed
 			if (map.get_current_terrain() != temp_map[player.get_y() - 1][player.get_x()]) {
 				map.set_current_terrain(temp_map[player.get_y() - 1][player.get_x()]);
 			}
 
-			// updates map
-			temp_map[player.get_y()][player.get_x()] = temp_map[player.get_y() - 1][player.get_x()];
-
+			// sets the player in the next location
 			temp_map[player.get_y() - 1][player.get_x()] = 'P';
 
 			// updates player
@@ -43,12 +45,11 @@ void Game::move(char op)
 		break;
 	case 'A':
 		if (can_move(temp_map[player.get_y()][player.get_x() - 1])) {
+			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
 
 			if (map.get_current_terrain() != temp_map[player.get_y()][player.get_x() - 1]) {
 				map.set_current_terrain(temp_map[player.get_y()][player.get_x() - 1]);
 			}
-
-			temp_map[player.get_y()][player.get_x()] = temp_map[player.get_y()][player.get_x() - 1];
 
 			temp_map[player.get_y()][player.get_x() - 1] = 'P';
 
@@ -58,12 +59,12 @@ void Game::move(char op)
 		break;
 	case 'D':
 		if (can_move(temp_map[player.get_y()][player.get_x() + 1])) {
+			
+			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
 
 			if (map.get_current_terrain() != temp_map[player.get_y()][player.get_x() + 1]) {
 				map.set_current_terrain(temp_map[player.get_y()][player.get_x() + 1]);
 			}
-
-			temp_map[player.get_y()][player.get_x()] = temp_map[player.get_y()][player.get_x() + 1];
 
 			temp_map[player.get_y()][player.get_x() + 1] = 'P';
 
@@ -74,11 +75,11 @@ void Game::move(char op)
 	case 'S':
 
 		if (can_move(temp_map[player.get_y() + 1][player.get_x()])) {
+			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
+			
 			if (map.get_current_terrain() != temp_map[player.get_y() + 1][player.get_x()]) {
 				map.set_current_terrain(temp_map[player.get_y() + 1][player.get_x()]);
 			}
-
-			temp_map[player.get_y()][player.get_x()] = temp_map[player.get_y() + 1][player.get_x()];
 
 			temp_map[player.get_y() + 1][player.get_x()] = 'P';
 
@@ -104,7 +105,9 @@ void Game::move(char op)
 
 void Game::display_stats()
 {
-	cout << "Health: " << player.get_health() << " Level: " << player.get_level() << endl << endl;
+	cout << "[ HP: " << player.get_health() << "/100 ] ";
+	cout << "[ Level: " << player.get_level() << " ] ";
+	cout << "[ XP: " << 12 << "/1250 ] " << endl << endl;
 }
 
 bool Game::can_move(char next)
@@ -124,7 +127,7 @@ bool Game::can_move(char next)
 
 bool Game::fight()
 {
-	int enemy_health = 10;
+	int enemy_health = 100;
 	int enemy_damage;
 	int player_damage;
 
@@ -179,12 +182,33 @@ bool Game::fight()
 
 		if (enemy_health <= 0) {
 			cout << "Enemy has been killed" << endl;
+
+			int upper_limit = player.get_xp_limit() * 0.4;
+			int lower_limit = player.get_xp_limit() * 0.1;
+
+			int xp = lower_limit + rand() % (upper_limit - lower_limit + 1);
+			cout << "+" << xp << " XP" << endl;
+
+			player.inc_xp(xp);
+
+			if (player.get_xp() >= player.get_xp_limit()) {
+				cout << "Player has leveled up!";
+				player.level_up();
+				player.inc_xp_limit();
+			}
+
 			this_thread::sleep_for(chrono::seconds(2));
 			return true;
 		}
 		else if (player.get_health() <= 0) {
 			player.get_killed();
 			cout << "Player has been killed" << endl;
+			this_thread::sleep_for(chrono::seconds(2));
+			cout << "Game over!" << endl;
+			this_thread::sleep_for(chrono::seconds(2));
+
+			game_over = true;
+
 			return false;
 		}
 		else {
@@ -196,3 +220,7 @@ bool Game::fight()
 	}
 }
 
+bool Game::is_game_over()
+{
+	return game_over;
+}

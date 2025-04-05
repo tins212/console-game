@@ -13,7 +13,9 @@ public:
 	void display_stats();
 	bool can_move(char next);
 	bool fight();
+	bool is_game_over();
 private:
+	bool game_over;
 	Player player;
 	Map map;
 };

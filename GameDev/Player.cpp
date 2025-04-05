@@ -7,6 +7,8 @@ Player::Player()
     // starting point is at (0,0) in the top left corner
     x = 1;
     y = 12;
+    xp = 0;
+    xp_limit = 200;
     is_alive = true;
 }
 
@@ -45,12 +47,32 @@ void Player::set_y(int y)
     this->y = y;
 }
 
-void Player::inc_level()
+void Player::get_killed()
+{
+    is_alive = false;
+}
+
+void Player::level_up()
 {
     level++;
 }
 
-void Player::get_killed()
+void Player::inc_xp(int xp)
 {
-    is_alive = false;
+    this->xp += xp;
+}
+
+int Player::get_xp_limit()
+{
+    return xp_limit;
+}
+
+int Player::get_xp()
+{
+    return xp;
+}
+
+void Player::inc_xp_limit()
+{
+    xp_limit += xp_limit * 1.5;
 }

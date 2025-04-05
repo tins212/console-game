@@ -21,8 +21,17 @@ int main() {
 	Game game;
 	hideCursor();
 
-	
-	while (true) {
+	cout << "Instructions: " << endl;
+	cout << "W,A,S,D = movement " << endl;
+	cout << "T = travel " << endl << endl;
+	cout << "Press enter to start";
+
+	int start = _getch();
+
+	system("cls");
+
+	while (!game.is_game_over()) {
+
 		game.display_stats();
 		game.display();
 	

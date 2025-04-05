@@ -51,8 +51,13 @@ void set_beach(vector<vector<char>>& beach)
 		int sand = 12 + rand() % 6;
 		for (int j = 0; j < 25; j++)
 		{
+			int enemy_idx = 1 + rand() % 17;
+
 			if (i == 12 and j == 1) {
 				row.push_back('P');
+			}
+			else if (enemy_idx == 1) {
+				row.push_back('E');
 			}
 			else if (j < sand) {
 				row.push_back('o');
@@ -116,10 +121,12 @@ void Map::change_current()
 	
 		if (choice == '1' and current != 1) {
 			current = 1;
+			current_terrain = '_';
 			break;
 		}
 		else if (choice == '2' and current != 2) {
 			current = 2;
+			current_terrain = 'o';
 			break;
 		}
 		else {
@@ -135,7 +142,9 @@ char Map::get_current_terrain()
 
 void Map::set_current_terrain(char terrain)
 {
-	current_terrain = terrain;
+	if (terrain != 'E') {
+		current_terrain = terrain;
+	}
 }
 
 
