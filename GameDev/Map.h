@@ -10,7 +10,7 @@ void set_beach(vector <vector<char>>& beach);
 class Map {
 public:
 	Map();
-	void draw();
+	int draw();
 	vector<vector<char>>& get_map();
 	void change_current();
 	int get_current();

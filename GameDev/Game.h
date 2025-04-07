@@ -11,11 +11,10 @@ public:
 	void display();
 	void move(char op);
 	void display_stats();
+	bool move_in_boundaries(char direction);
 	bool can_move(char next);
 	bool fight();
-	bool is_game_over();
 private:
-	bool game_over;
 	Player player;
 	Map map;
 };

@@ -1,8 +1,11 @@
 #include "Map.h"
+#include "Player.h"
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
 #include <ctime>
+#include <chrono>
+#include <thread>
 
 char generate_char_test()
 {
@@ -51,13 +54,8 @@ void set_beach(vector<vector<char>>& beach)
 		int sand = 12 + rand() % 6;
 		for (int j = 0; j < 25; j++)
 		{
-			int enemy_idx = 1 + rand() % 17;
-
 			if (i == 12 and j == 1) {
 				row.push_back('P');
-			}
-			else if (enemy_idx == 1) {
-				row.push_back('E');
 			}
 			else if (j < sand) {
 				row.push_back('o');
@@ -78,7 +76,7 @@ Map::Map()
 	set_beach(beach);
 }
 
-void Map::draw()
+int Map::draw()
 {
 	vector<vector<char>> current_map;
 	if (current == 1) {
@@ -88,14 +86,19 @@ void Map::draw()
 		current_map = beach;
 	}
 
+	int enemy_count = 0;
+
 	for (int i = 0; i < 14; i++)
 	{
 		for (int j = 0; j < 25; j++)
 		{
 			cout << current_map[i][j];
+			if (current_map[i][j] == 'E') enemy_count++;
 		}
 		cout << endl;
 	}
+
+	return enemy_count;
 }
 
 vector<vector<char>>& Map::get_map()
@@ -121,18 +124,23 @@ void Map::change_current()
 	
 		if (choice == '1' and current != 1) {
 			current = 1;
-			current_terrain = '_';
 			break;
 		}
 		else if (choice == '2' and current != 2) {
 			current = 2;
-			current_terrain = 'o';
 			break;
 		}
 		else {
 			cout << "Already at the map!" << endl;
+			this_thread::sleep_for(chrono::seconds(3));
+			break;
 		}
 	}
+}
+
+int Map::get_current()
+{
+	return current;
 }
 
 char Map::get_current_terrain()
@@ -142,9 +150,7 @@ char Map::get_current_terrain()
 
 void Map::set_current_terrain(char terrain)
 {
-	if (terrain != 'E') {
-		current_terrain = terrain;
-	}
+	current_terrain = terrain;
 }
 
 
