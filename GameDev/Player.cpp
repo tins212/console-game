@@ -7,14 +7,17 @@ Player::Player()
     // starting point is at (0,0) in the top left corner
     x = 1;
     y = 12;
-    xp = 0;
-    xp_limit = 200;
     is_alive = true;
 }
 
 int Player::get_health()
 {
     return health;
+}
+
+void Player::set_health(int health)
+{
+    this->health = health;
 }
 
 int Player::get_x()
@@ -47,32 +50,17 @@ void Player::set_y(int y)
     this->y = y;
 }
 
+void Player::inc_level()
+{
+    level++;
+}
+
 void Player::get_killed()
 {
     is_alive = false;
 }
 
-void Player::level_up()
+bool Player::get_is_alive()
 {
-    level++;
-}
-
-void Player::inc_xp(int xp)
-{
-    this->xp += xp;
-}
-
-int Player::get_xp_limit()
-{
-    return xp_limit;
-}
-
-int Player::get_xp()
-{
-    return xp;
-}
-
-void Player::inc_xp_limit()
-{
-    xp_limit += xp_limit * 1.5;
+    return is_alive;
 }

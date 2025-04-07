@@ -10,12 +10,23 @@ using namespace std;
 
 Game::Game()
 {
-	game_over = false;
 }
 
 void Game::display()
 {
-	map.draw();
+	if (player.get_is_alive()) {
+		if (map.draw() == 0 and map.get_current() != 2) {
+			this_thread::sleep_for(chrono::seconds(3));
+			system("cls");
+			cout << "YOU HAVE WON THE GAME\n\nCONGRATULATIONS";
+		}
+	}
+	else {
+		map.draw();
+		this_thread::sleep_for(chrono::seconds(3));
+		system("cls");
+		cout << "GAME OVER\n\n";
+	}
 }
 
 void Game::move(char op)
@@ -23,91 +34,141 @@ void Game::move(char op)
 	// returns the reference of a map
 	vector<vector<char>>& temp_map = map.get_map();
 
-	switch (op) {
-	case 'W':
-		// checks if there is a fight or an obsticale 
-		if (can_move(temp_map[player.get_y() - 1][player.get_x()])) {
-			// deletes the player from the old location
-			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
-			
-			// checks current terrain changed
-			if (map.get_current_terrain() != temp_map[player.get_y() - 1][player.get_x()]) {
-				map.set_current_terrain(temp_map[player.get_y() - 1][player.get_x()]);
+	char next_terrain = map.get_current_terrain();
+
+	//first check if the move will cause going out of range
+	if (move_in_boundaries(op)) {
+		switch (op) {
+		case 'W':
+			// remembering the terrain which we step on
+			next_terrain = temp_map[player.get_y() - 1][player.get_x()];
+
+			// checks if there is a fight or an obsticale 
+			if (can_move(next_terrain)) {
+				// checks current terrain changed
+				if (map.get_current_terrain() != next_terrain and next_terrain != 'E') {
+					map.set_current_terrain(next_terrain);
+				}
+
+				// updates map
+				if (next_terrain != 'E') {
+					temp_map[player.get_y()][player.get_x()] = next_terrain;
+					temp_map[player.get_y() - 1][player.get_x()] = 'P';
+				}
+				else {
+					temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
+					temp_map[player.get_y() - 1][player.get_x()] = 'P';
+				}
+				
+				// updates player
+				player.set_x(player.get_x());
+				player.set_y(player.get_y() - 1);
 			}
+			break;
+		case 'A':
+			// remembering the terrain which we step on
+			next_terrain = temp_map[player.get_y()][player.get_x() - 1];
 
-			// sets the player in the next location
-			temp_map[player.get_y() - 1][player.get_x()] = 'P';
+			if (can_move(next_terrain)) {
+				// checks current terrain changed
+				if (map.get_current_terrain() != next_terrain and next_terrain != 'E') {
+					map.set_current_terrain(next_terrain);
+				}
 
-			// updates player
-			player.set_x(player.get_x());
-			player.set_y(player.get_y() - 1);
-		}
-		break;
-	case 'A':
-		if (can_move(temp_map[player.get_y()][player.get_x() - 1])) {
+				// updates map
+				if (next_terrain != 'E') {
+					temp_map[player.get_y()][player.get_x()] = next_terrain;
+					temp_map[player.get_y()][player.get_x() - 1] = 'P';
+				}
+				else {
+					temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
+					temp_map[player.get_y()][player.get_x() - 1] = 'P';
+				}
+
+				// updates player
+				player.set_x(player.get_x() - 1);
+				player.set_y(player.get_y());
+			}
+			break;
+		case 'D':
+			// remembering the terrain which we step on
+			next_terrain = temp_map[player.get_y()][player.get_x() + 1];
+
+			if (can_move(next_terrain)) {
+				// checks current terrain changed
+				if (map.get_current_terrain() != next_terrain and next_terrain != 'E') {
+					map.set_current_terrain(next_terrain);
+				}
+
+				// updates map
+				if (next_terrain != 'E') {
+					temp_map[player.get_y()][player.get_x()] = next_terrain;
+					temp_map[player.get_y()][player.get_x() + 1] = 'P';
+				}
+				else {
+					temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
+					temp_map[player.get_y()][player.get_x() + 1] = 'P';
+				}
+
+				// updates player
+				player.set_x(player.get_x() + 1);
+				player.set_y(player.get_y());
+			}
+			break;
+		case 'S':
+			// remembering the terrain which we step on
+			next_terrain = temp_map[player.get_y() + 1][player.get_x()];
+
+			if (can_move(next_terrain)) {
+				// checks current terrain changed
+				if (map.get_current_terrain() != next_terrain and next_terrain != 'E') {
+					map.set_current_terrain(next_terrain);
+				}
+
+				// updates map
+				if (next_terrain != 'E') {
+					temp_map[player.get_y()][player.get_x()] = next_terrain;
+					temp_map[player.get_y() + 1][player.get_x()] = 'P';
+				}
+				else {
+					temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
+					temp_map[player.get_y() + 1][player.get_x()] = 'P';
+				}
+
+				// updates player
+				player.set_x(player.get_x());
+				player.set_y(player.get_y() + 1);
+			}
+			break;
+		case 'T':
+			// deletes the player from the previous map
 			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
 
-			if (map.get_current_terrain() != temp_map[player.get_y()][player.get_x() - 1]) {
-				map.set_current_terrain(temp_map[player.get_y()][player.get_x() - 1]);
-			}
+			map.change_current();
 
-			temp_map[player.get_y()][player.get_x() - 1] = 'P';
+			// updates player coordinates for the second map
+			player.set_x(1);
+			player.set_y(12);
 
-			player.set_x(player.get_x() - 1);
-			player.set_y(player.get_y());
+			// sets the player onto the second map
+			vector<vector<char>>& new_map = map.get_map();
+			new_map[player.get_y()][player.get_x()] = 'P';
 		}
-		break;
-	case 'D':
-		if (can_move(temp_map[player.get_y()][player.get_x() + 1])) {
-			
-			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
-
-			if (map.get_current_terrain() != temp_map[player.get_y()][player.get_x() + 1]) {
-				map.set_current_terrain(temp_map[player.get_y()][player.get_x() + 1]);
-			}
-
-			temp_map[player.get_y()][player.get_x() + 1] = 'P';
-
-			player.set_x(player.get_x() + 1);
-			player.set_y(player.get_y());
-		}
-		break;
-	case 'S':
-
-		if (can_move(temp_map[player.get_y() + 1][player.get_x()])) {
-			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
-			
-			if (map.get_current_terrain() != temp_map[player.get_y() + 1][player.get_x()]) {
-				map.set_current_terrain(temp_map[player.get_y() + 1][player.get_x()]);
-			}
-
-			temp_map[player.get_y() + 1][player.get_x()] = 'P';
-
-			player.set_x(player.get_x());
-			player.set_y(player.get_y() + 1);
-		}
-		break;
-	case 'T':
-		// deletes the player from the previous map
-		temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
-
-		map.change_current();
-
-		// updates player coordinates for the second map
-		player.set_x(1);
-		player.set_y(12);
-
-		// sets the player onto the second map
-		vector<vector<char>>& new_map = map.get_map();
-		new_map[player.get_y()][player.get_x()] = 'P';
 	}
 }
 
 void Game::display_stats()
 {
-	cout << "[ HP: " << player.get_health() << "/100 ] ";
-	cout << "[ Level: " << player.get_level() << " ] ";
-	cout << "[ XP: " << 12 << "/1250 ] " << endl << endl;
+	cout << "Health: " << player.get_health() << " Level: " << player.get_level() << endl << endl;
+}
+
+bool Game::move_in_boundaries(char direction)
+{
+	if (direction == 'W' and player.get_y() == 0) return false;
+	else if (direction == 'A' and player.get_x() == 0) return false;
+	else if (direction == 'S' and player.get_y() == 13) return false;
+	else if (direction == 'D' and player.get_x() == 24) return false;
+	return true;
 }
 
 bool Game::can_move(char next)
@@ -127,9 +188,9 @@ bool Game::can_move(char next)
 
 bool Game::fight()
 {
-	int enemy_health = 100;
-	int enemy_damage;
-	int player_damage;
+	int enemy_health = 10;
+	int enemy_damage = 0;
+	int player_damage = 0;
 
 	system("cls");
 
@@ -144,12 +205,12 @@ bool Game::fight()
 		int enemy_mov = 1 + rand() % 2;
 
 		if (player_mov == '1' and enemy_mov == 1) {
-			enemy_damage = 10 + rand() % 10;
-			player_damage = 10 + rand() % 10;
+			enemy_damage = 1 + rand() % 10;
+			player_damage = 3 + rand() % 13;
 
 			cout << "Both player and enemy have attacked" << endl;
-			cout << "Enemy took " << enemy_damage << endl;
-			cout << "Player took " << player_damage << endl << endl;
+			cout << "Player took " << player_damage << endl;
+			cout << "Enemy took " << enemy_damage << endl << endl;
 		
 			player.get_damaged(player_damage);
 			enemy_health -= enemy_damage;
@@ -180,36 +241,17 @@ bool Game::fight()
 			return false;
 		}
 
-		if (enemy_health <= 0) {
-			cout << "Enemy has been killed" << endl;
-
-			int upper_limit = player.get_xp_limit() * 0.4;
-			int lower_limit = player.get_xp_limit() * 0.1;
-
-			int xp = lower_limit + rand() % (upper_limit - lower_limit + 1);
-			cout << "+" << xp << " XP" << endl;
-
-			player.inc_xp(xp);
-
-			if (player.get_xp() >= player.get_xp_limit()) {
-				cout << "Player has leveled up!";
-				player.level_up();
-				player.inc_xp_limit();
-			}
-
-			this_thread::sleep_for(chrono::seconds(2));
-			return true;
-		}
-		else if (player.get_health() <= 0) {
+		if (player.get_health() <= 0) {
 			player.get_killed();
 			cout << "Player has been killed" << endl;
-			this_thread::sleep_for(chrono::seconds(2));
-			cout << "Game over!" << endl;
-			this_thread::sleep_for(chrono::seconds(2));
-
-			game_over = true;
-
+			player.set_health(0);
+			this_thread::sleep_for(chrono::seconds(7));
 			return false;
+		}
+		else if (enemy_health <= 0) {
+			cout << "Enemy has been killed" << endl;
+			this_thread::sleep_for(chrono::seconds(7));
+			return true;
 		}
 		else {
 			cout << "Press enter for next round" << endl;
@@ -220,7 +262,3 @@ bool Game::fight()
 	}
 }
 
-bool Game::is_game_over()
-{
-	return game_over;
-}
