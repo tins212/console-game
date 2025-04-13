@@ -4,17 +4,21 @@
 #include <windows.h>
 #include <ctime>
 
-char generate_char_test()
+char generate_char()
 {
 		int char_idx = 1 + rand() % 100;
 
-		if (char_idx < 94) {
+		if (char_idx < 92) {
 			return '_';
 		}
-		else if (char_idx < 96) {
+		else if (char_idx < 94) {
 			return 'E';
 		}
-		else {
+		else if (char_idx < 96) {
+			return 'a';
+		}
+		else 
+		{
 			return 'T';
 		}
 }
@@ -32,7 +36,7 @@ void set_forest(vector<vector<char>>& forest)
 				row.push_back('P');
 			}
 			else {
-				row.push_back(generate_char_test());
+				row.push_back(generate_char());
 			}
 		}
 		forest.push_back(row);

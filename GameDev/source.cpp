@@ -23,6 +23,7 @@ int main() {
 
 	cout << "Instructions: " << endl;
 	cout << "W,A,S,D = movement " << endl;
+	cout << "I = stats" << endl;
 	cout << "T = travel " << endl << endl;
 	cout << "Press enter to start";
 

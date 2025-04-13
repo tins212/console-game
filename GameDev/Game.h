@@ -18,4 +18,9 @@ private:
 	bool game_over;
 	Player player;
 	Map map;
+private:
+	void slow_down(char current_terrain);
+	void update_map(int x, int y);
+	void travel();
+	bool is_out_of_bounds(int x, int y);
 };

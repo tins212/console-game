@@ -16,9 +16,12 @@ public:
 	int get_xp_limit();
 	int get_xp();
 	void inc_xp_limit();
+	void inc_healh(int inc);
+	void inc_health_limit();
 private:
 	bool is_alive;
 	int health;
+	int health_limit;
 	int level;
 	int xp;
 	int xp_limit;

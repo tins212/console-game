@@ -3,6 +3,7 @@
 Player::Player()
 {
     health = 100;
+    health_limit = 100;
     level = 1;
     // starting point is at (0,0) in the top left corner
     x = 1;
@@ -75,4 +76,15 @@ int Player::get_xp()
 void Player::inc_xp_limit()
 {
     xp_limit += xp_limit * 1.5;
+}
+
+void Player::inc_healh(int inc)
+{
+    health += inc;
+}
+
+void Player::inc_health_limit()
+{
+    int limit_inc = (health_limit * 0.2);
+    health_limit += limit_inc;
 }

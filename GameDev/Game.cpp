@@ -20,86 +20,23 @@ void Game::display()
 
 void Game::move(char op)
 {
-	// returns the reference of a map
-	vector<vector<char>>& temp_map = map.get_map();
-
+	
 	switch (op) {
 	case 'W':
-		// checks if there is a fight or an obsticale 
-		if (can_move(temp_map[player.get_y() - 1][player.get_x()])) {
-			// deletes the player from the old location
-			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
-			
-			// checks current terrain changed
-			if (map.get_current_terrain() != temp_map[player.get_y() - 1][player.get_x()]) {
-				map.set_current_terrain(temp_map[player.get_y() - 1][player.get_x()]);
-			}
-
-			// sets the player in the next location
-			temp_map[player.get_y() - 1][player.get_x()] = 'P';
-
-			// updates player
-			player.set_x(player.get_x());
-			player.set_y(player.get_y() - 1);
-		}
+		update_map(0, -1);
 		break;
 	case 'A':
-		if (can_move(temp_map[player.get_y()][player.get_x() - 1])) {
-			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
-
-			if (map.get_current_terrain() != temp_map[player.get_y()][player.get_x() - 1]) {
-				map.set_current_terrain(temp_map[player.get_y()][player.get_x() - 1]);
-			}
-
-			temp_map[player.get_y()][player.get_x() - 1] = 'P';
-
-			player.set_x(player.get_x() - 1);
-			player.set_y(player.get_y());
-		}
+		update_map(-1, 0);
 		break;
 	case 'D':
-		if (can_move(temp_map[player.get_y()][player.get_x() + 1])) {
-			
-			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
-
-			if (map.get_current_terrain() != temp_map[player.get_y()][player.get_x() + 1]) {
-				map.set_current_terrain(temp_map[player.get_y()][player.get_x() + 1]);
-			}
-
-			temp_map[player.get_y()][player.get_x() + 1] = 'P';
-
-			player.set_x(player.get_x() + 1);
-			player.set_y(player.get_y());
-		}
+		update_map(1, 0);
 		break;
 	case 'S':
-
-		if (can_move(temp_map[player.get_y() + 1][player.get_x()])) {
-			temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
-			
-			if (map.get_current_terrain() != temp_map[player.get_y() + 1][player.get_x()]) {
-				map.set_current_terrain(temp_map[player.get_y() + 1][player.get_x()]);
-			}
-
-			temp_map[player.get_y() + 1][player.get_x()] = 'P';
-
-			player.set_x(player.get_x());
-			player.set_y(player.get_y() + 1);
-		}
+		update_map(0, 1);
 		break;
 	case 'T':
-		// deletes the player from the previous map
-		temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
-
-		map.change_current();
-
-		// updates player coordinates for the second map
-		player.set_x(1);
-		player.set_y(12);
-
-		// sets the player onto the second map
-		vector<vector<char>>& new_map = map.get_map();
-		new_map[player.get_y()][player.get_x()] = 'P';
+		travel();
+		break;
 	}
 }
 
@@ -107,7 +44,7 @@ void Game::display_stats()
 {
 	cout << "[ HP: " << player.get_health() << "/100 ] ";
 	cout << "[ Level: " << player.get_level() << " ] ";
-	cout << "[ XP: " << 12 << "/1250 ] " << endl << endl;
+	cout << "[ XP: " << player.get_xp() << "/" << player.get_xp_limit() << " ] " << endl << endl;
 }
 
 bool Game::can_move(char next)
@@ -121,13 +58,20 @@ bool Game::can_move(char next)
 	else if (next == 'T') {
 		return false;
 	}
+	else if (next == 'a') {
+		int to_increase = 5 + rand() % 6;
+
+		if (to_increase + player.get_health() <= 100) {
+			player.inc_healh(to_increase);
+		}
+	}
 
 	return true;
 }
 
 bool Game::fight()
 {
-	int enemy_health = 100;
+	int enemy_health = 10;
 	int enemy_damage;
 	int player_damage;
 
@@ -195,6 +139,7 @@ bool Game::fight()
 				cout << "Player has leveled up!";
 				player.level_up();
 				player.inc_xp_limit();
+				player.inc_health_limit();
 			}
 
 			this_thread::sleep_for(chrono::seconds(2));
@@ -223,4 +168,68 @@ bool Game::fight()
 bool Game::is_game_over()
 {
 	return game_over;
+}
+
+void Game::slow_down(char current_terrain)
+{
+	if (current_terrain == 'o') {
+		this_thread::sleep_for(chrono::milliseconds(200));
+	}
+	else if (map.get_current_terrain() == '~') {
+		this_thread::sleep_for(chrono::milliseconds(400));
+	}
+}
+
+void Game::update_map(int x, int y)
+{
+	if (is_out_of_bounds(x,y)) {
+		return;
+	}
+
+	vector<vector<char>>& temp_map = map.get_map();
+	
+	if (can_move(temp_map[player.get_y()+y][player.get_x()+x])) {
+		temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
+
+		if (map.get_current_terrain() != temp_map[player.get_y()+y][player.get_x()+x]
+			and temp_map[player.get_y() + y][player.get_x() + x] != 'a'
+			) {
+			map.set_current_terrain(temp_map[player.get_y()+y][player.get_x()+x]);
+		}
+
+		slow_down(map.get_current_terrain());
+
+		temp_map[player.get_y()+y][player.get_x()+x] = 'P';
+
+		player.set_x(player.get_x()+x);
+		player.set_y(player.get_y()+y);
+	}
+}
+
+void Game::travel()
+{
+	vector<vector<char>>& temp_map = map.get_map();
+
+	// deletes the player from the previous map
+	temp_map[player.get_y()][player.get_x()] = map.get_current_terrain();
+
+	map.change_current();
+
+	// updates player coordinates for the second map
+	player.set_x(1);
+	player.set_y(12);
+
+	// sets the player onto the second map
+	vector<vector<char>>& new_map = map.get_map();
+	new_map[player.get_y()][player.get_x()] = 'P';
+}
+
+bool Game::is_out_of_bounds(int x, int y)
+{
+	int next_x = player.get_x() + x;
+	int next_y = player.get_y() + y;
+
+	if (next_y < 0 or next_y > 13 or next_x < 0 or next_x > 24) return true;
+	
+	return false;
 }
