@@ -1,8 +1,8 @@
 #include "Map.h"
 #include <iostream>
-#include <conio.h>
 #include <windows.h>
 #include <ctime>
+
 
 char generate_char()
 {
@@ -23,7 +23,7 @@ char generate_char()
 		}
 }
 
-void set_forest(vector<vector<char>>& forest)
+void set_forest(vector<vector<char>>& forest, int player_x, int player_y)
 {
 	srand(time(nullptr));
 
@@ -32,7 +32,7 @@ void set_forest(vector<vector<char>>& forest)
 		vector <char> row;
 		for (int j = 0; j < 25; j++)
 		{
-			if (i == 12 and j == 1) {
+			if (i == player_y and j == player_y) {
 				row.push_back('P');
 			}
 			else {
@@ -43,9 +43,11 @@ void set_forest(vector<vector<char>>& forest)
 	}
 }
 
-void set_beach(vector<vector<char>>& beach)
+void set_beach(vector<vector<char>>& beach, int player_x,int player_y)
 {
 	srand(time(nullptr));
+
+	// default player_x, player_y = (1,12)
 
 	for (int i = 0; i < 14; i++)
 	{
@@ -57,7 +59,7 @@ void set_beach(vector<vector<char>>& beach)
 		{
 			int enemy_idx = 1 + rand() % 17;
 
-			if (i == 12 and j == 1) {
+			if (i == player_y and j == player_x) {
 				row.push_back('P');
 			}
 			else if (enemy_idx == 1) {
@@ -78,8 +80,8 @@ Map::Map()
 {
 	current = 1;
 	current_terrain = '_';
-	set_forest(forest);
-	set_beach(beach);
+	set_forest(forest,1,12);
+	set_beach(beach,1,12);
 }
 
 void Map::draw()
@@ -149,6 +151,18 @@ void Map::set_current_terrain(char terrain)
 	if (terrain != 'E') {
 		current_terrain = terrain;
 	}
+}
+
+void Map::reset(int player_x,int player_y)
+{
+	if (current == 1) {
+		forest.clear();
+		set_forest(forest,player_x,player_y);
+	}
+	else if (current == 2) {
+		beach.clear();
+		set_beach(beach,player_x,player_y);
+	};
 }
 
 

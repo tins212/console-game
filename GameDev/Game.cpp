@@ -42,7 +42,7 @@ void Game::move(char op)
 
 void Game::display_stats()
 {
-	cout << "[ HP: " << player.get_health() << "/100 ] ";
+	cout << "[ HP: " << player.get_health() << "/" << player.get_health_limit() << " ] ";
 	cout << "[ Level: " << player.get_level() << " ] ";
 	cout << "[ XP: " << player.get_xp() << "/" << player.get_xp_limit() << " ] " << endl << endl;
 }
@@ -78,6 +78,7 @@ bool Game::fight()
 	system("cls");
 
 	while (true) {
+
 		cout << "Player health: " << player.get_health() << "  Enemy health: " << enemy_health << endl;
 		cout << "1 = attack" << endl;
 		cout << "2 = block" << endl; 
@@ -85,11 +86,12 @@ bool Game::fight()
 
 		cout << "";
 		char player_mov = _getch();
-		int enemy_mov = 1 + rand() % 2;
+		int enemy_mov = 1 + rand() % 4;
 
-		if (player_mov == '1' and enemy_mov == 1) {
+		// main fighting logic
+		if (player_mov == '1' and enemy_mov < 4) {
 			enemy_damage = 10 + rand() % 10;
-			player_damage = 10 + rand() % 10;
+			player_damage = 8 + rand() % 10;
 
 			cout << "Both player and enemy have attacked" << endl;
 			cout << "Enemy took " << enemy_damage << endl;
@@ -98,11 +100,11 @@ bool Game::fight()
 			player.get_damaged(player_damage);
 			enemy_health -= enemy_damage;
 		}
-		else if (player_mov == '2' and enemy_mov == 2) {
+		else if (player_mov == '2' and enemy_mov == 4) {
 			cout << "Both players have blocked" << endl;
 			cout << "No one took damage " << endl << endl;
 		}
-		else if (player_mov == '2' and enemy_mov == 1) {
+		else if (player_mov == '2' and enemy_mov < 4) {
 			enemy_damage = 8 + rand() % 11;
 			
 			cout << "Player has blocked and enemy has attacked" << endl;
@@ -111,7 +113,7 @@ bool Game::fight()
 
 			enemy_health -= enemy_damage;
 		}
-		else if (player_mov == '1' and enemy_mov == 2) {
+		else if (player_mov == '1' and enemy_mov == 4) {
 			player_damage = 8 + rand() % 11;
 			
 			cout << "Player has attacked and enemy has blocked" << endl;
@@ -124,6 +126,7 @@ bool Game::fight()
 			return false;
 		}
 
+		// end of fight logic
 		if (enemy_health <= 0) {
 			cout << "Enemy has been killed" << endl;
 
@@ -183,6 +186,8 @@ void Game::slow_down(char current_terrain)
 void Game::update_map(int x, int y)
 {
 	if (is_out_of_bounds(x,y)) {
+		player.wrap_cord(x,y);
+		map.reset(player.get_x(),player.get_y());
 		return;
 	}
 
@@ -216,8 +221,7 @@ void Game::travel()
 	map.change_current();
 
 	// updates player coordinates for the second map
-	player.set_x(1);
-	player.set_y(12);
+	player.reset_cord();
 
 	// sets the player onto the second map
 	vector<vector<char>>& new_map = map.get_map();

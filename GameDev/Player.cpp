@@ -28,6 +28,28 @@ int Player::get_y()
     return y;
 }
 
+void Player::reset_cord()
+{
+    x = 1;
+    y = 12;
+}
+
+void Player::wrap_cord(int x, int y)
+{	
+    if (this->y + y < 0) {
+        set_y(this->y+12);
+    }
+    else if (this->y + y > 13) {
+        set_y(this->y-12);
+    }
+    else if (this->x + x < 0) {
+        set_x(this->x+22);
+    }
+    else if (this->x + x > 24) {
+        set_x(this->x-22);
+    }
+}
+
 void Player::get_damaged(int d)
 {
     health -= d;
@@ -87,4 +109,9 @@ void Player::inc_health_limit()
 {
     int limit_inc = (health_limit * 0.2);
     health_limit += limit_inc;
+}
+
+int Player::get_health_limit()
+{
+    return health_limit;
 }

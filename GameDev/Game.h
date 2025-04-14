@@ -9,10 +9,12 @@ class Game {
 public:
 	Game();
 	void display();
-	void move(char op);
 	void display_stats();
+
+	void move(char op);
 	bool can_move(char next);
 	bool fight();
+
 	bool is_game_over();
 private:
 	bool game_over;
