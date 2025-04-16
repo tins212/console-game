@@ -22,20 +22,23 @@ void Game::move(char op)
 {
 	
 	switch (op) {
-	case 'W':
+	case 'w':
 		update_map(0, -1);
 		break;
-	case 'A':
+	case 'a':
 		update_map(-1, 0);
 		break;
-	case 'D':
+	case 'd':
 		update_map(1, 0);
 		break;
-	case 'S':
+	case 's':
 		update_map(0, 1);
 		break;
-	case 'T':
+	case 't':
 		travel();
+		break;
+	case 'n':
+		display_skills();
 		break;
 	}
 }
@@ -45,6 +48,32 @@ void Game::display_stats()
 	cout << "[ HP: " << player.get_health() << "/" << player.get_health_limit() << " ] ";
 	cout << "[ Level: " << player.get_level() << " ] ";
 	cout << "[ XP: " << player.get_xp() << "/" << player.get_xp_limit() << " ] " << endl << endl;
+}
+
+void Game::display_skills()
+{
+	system("cls");
+	while (true) {
+		cout << "=========================" << endl;
+		cout << "    PLAYER STATS MENU   " << endl;
+		cout << "=========================" << endl;
+
+		cout << "Max Health  : " << player.get_health_limit() << endl;
+		cout << "Level       : " << player.get_level() << endl << endl;
+
+		cout << "Defense	    : " << player.get_defense() << endl;
+		cout << "Crit Chance : " << player.get_crit_chance() << "%" << endl;
+		cout << "Agility     : " << player.get_agility() << endl;
+
+		cout << "-------------------------" << endl;
+		cout << "Press [x] to exit" << endl;
+
+		char user = _getch();
+		if (user == 'x') break;
+
+		system("cls");
+	}
+
 }
 
 bool Game::can_move(char next)
@@ -64,6 +93,9 @@ bool Game::can_move(char next)
 		if (to_increase + player.get_health() <= 100) {
 			player.inc_healh(to_increase);
 		}
+		else {
+			player.inc_healh(100 - player.get_health());
+		}
 	}
 
 	return true;
@@ -71,29 +103,48 @@ bool Game::can_move(char next)
 
 bool Game::fight()
 {
-	int enemy_health = 10;
+	int enemy_health = 100;
 	int enemy_damage;
 	int player_damage;
+
+	int round = 1;
 
 	system("cls");
 
 	while (true) {
 
-		cout << "Player health: " << player.get_health() << "  Enemy health: " << enemy_health << endl;
-		cout << "1 = attack" << endl;
-		cout << "2 = block" << endl; 
-		cout << "3 = flee" << endl << endl;
+		cout << "Round: " << round << endl;
+		cout << "-------------------------" << endl;
 
-		cout << "";
+		cout << "|Player HP: "<< player.get_health() << "		|" << endl;
+		cout << "|Enemy HP: " << enemy_health << "		|" << endl;
+		
+		cout << "-------------------------" << endl;
+
+		cout << "|What will you do?	|" << endl;
+		cout << "|1. attack		|" << endl;
+		cout << "|2. block		|" << endl; 
+		cout << "|3. flee		|" << endl;
+
+		cout << "-------------------------" << endl;
+		cout << "Action: " << endl;
+
 		char player_mov = _getch();
 		int enemy_mov = 1 + rand() % 4;
-
+		
 		// main fighting logic
 		if (player_mov == '1' and enemy_mov < 4) {
 			enemy_damage = 10 + rand() % 10;
 			player_damage = 8 + rand() % 10;
+			cout << "Both player and enemy have attacked" << endl << endl;
 
-			cout << "Both player and enemy have attacked" << endl;
+			// crit mechanic
+			int crit_chance = 1 + rand() % 100;
+			if (crit_chance < player.get_crit_chance()) {
+				cout << "Player made a critical hit" << endl;
+				player_damage += 1 + rand() % 10;
+			}
+
 			cout << "Enemy took " << enemy_damage << endl;
 			cout << "Player took " << player_damage << endl << endl;
 		
@@ -107,7 +158,8 @@ bool Game::fight()
 		else if (player_mov == '2' and enemy_mov < 4) {
 			enemy_damage = 8 + rand() % 11;
 			
-			cout << "Player has blocked and enemy has attacked" << endl;
+			cout << "Player has blocked and enemy has attacked" << endl << endl;
+
 			cout << "Player took no damage" << endl;
 			cout << "Enemy took " << enemy_damage << endl << endl;
 
@@ -115,7 +167,15 @@ bool Game::fight()
 		}
 		else if (player_mov == '1' and enemy_mov == 4) {
 			player_damage = 8 + rand() % 11;
-			
+			player_damage += 1 + rand() % (player.get_defense()/2);
+
+			// crit mechanic
+			int crit_chance = 1 + rand() % 100;
+			if (crit_chance < player.get_crit_chance()) {
+				cout << "Player made a critical hit" << endl;
+				player_damage += 1 + rand() % 10;
+			}
+
 			cout << "Player has attacked and enemy has blocked" << endl;
 			cout << "Player took " << player_damage << endl;
 			cout << "Enemy took no damage" << endl << endl;
@@ -123,6 +183,17 @@ bool Game::fight()
 			player.get_damaged(player_damage);
 		}
 		else if (player_mov == '3') {
+			int flee_damage = 1 + rand() % 10;
+			int flee = 1 + rand() % 100;
+
+			if (flee > player.get_agility()) {
+				cout << "Player has fleed and took " << flee_damage << " damage" << endl;
+				player.get_damaged(flee_damage);
+			}
+			else {
+				cout << "Player has fleed and took no damage" << endl;
+			}
+			this_thread::sleep_for(chrono::seconds(2));
 			return false;
 		}
 
@@ -139,10 +210,8 @@ bool Game::fight()
 			player.inc_xp(xp);
 
 			if (player.get_xp() >= player.get_xp_limit()) {
-				cout << "Player has leveled up!";
 				player.level_up();
 				player.inc_xp_limit();
-				player.inc_health_limit();
 			}
 
 			this_thread::sleep_for(chrono::seconds(2));
@@ -164,6 +233,7 @@ bool Game::fight()
 			char next_round = _getch();
 		}
 		
+		round++;
 		system("cls");
 	}
 }
@@ -186,7 +256,7 @@ void Game::slow_down(char current_terrain)
 void Game::update_map(int x, int y)
 {
 	if (is_out_of_bounds(x,y)) {
-		player.wrap_cord(x,y);
+		player.reset_cord();
 		map.reset(player.get_x(),player.get_y());
 		return;
 	}

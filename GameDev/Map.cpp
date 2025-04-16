@@ -32,7 +32,7 @@ void set_forest(vector<vector<char>>& forest, int player_x, int player_y)
 		vector <char> row;
 		for (int j = 0; j < 25; j++)
 		{
-			if (i == player_y and j == player_y) {
+			if (i == player_y and j == player_x) {
 				row.push_back('P');
 			}
 			else {

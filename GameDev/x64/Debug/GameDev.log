@@ -1,13 +1,4 @@
 ﻿  Game.cpp
-C:\Users\tinst\source\repos\game_project\GameDev\Game.cpp(133,20): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\tinst\source\repos\game_project\GameDev\Game.cpp(134,20): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-  Map.cpp
-C:\Users\tinst\source\repos\game_project\GameDev\Map.cpp(28,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\tinst\source\repos\game_project\GameDev\Map.cpp(48,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  Player.cpp
-C:\Users\tinst\source\repos\game_project\GameDev\Player.cpp(100,26): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\tinst\source\repos\game_project\GameDev\Player.cpp(110,19): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-  source.cpp
-  Generating Code...
-C:\Users\tinst\source\repos\game_project\GameDev\Map.cpp(115,1): warning C4715: 'Map::get_map': not all control paths return a value
+C:\Users\tinst\source\repos\game_project\GameDev\Game.cpp(204,20): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\tinst\source\repos\game_project\GameDev\Game.cpp(205,20): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   GameDev.vcxproj -> C:\Users\tinst\source\repos\game_project\x64\Debug\GameDev.exe

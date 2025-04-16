@@ -1,4 +1,10 @@
 #pragma once
+#include <Windows.h>
+#include <iostream>
+#include <conio.h>
+#include <thread>
+
+using namespace std;
 
 class Player {
 public:
@@ -26,6 +32,14 @@ public:
 	int get_health();
 	void inc_health_limit();
 	int get_health_limit();
+
+	void inc_crit_chance(int n);
+	void inc_agility(int n);
+	void inc_defense(int n);
+	int get_crit_chance();
+	int get_agility();
+	int get_defense();
+
 private:
 	bool is_alive;
 
@@ -38,4 +52,8 @@ private:
 	
 	int x;
 	int y;
+
+	int crit_chance;
+	int agility;
+	int defense;
 };

@@ -10,6 +10,7 @@ public:
 	Game();
 	void display();
 	void display_stats();
+	void display_skills();
 
 	void move(char op);
 	bool can_move(char next);
